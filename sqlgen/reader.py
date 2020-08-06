@@ -2,6 +2,7 @@
 # -*- coding: utf8
 
 import logging
+import re
 
 import xlrd
 
@@ -45,15 +46,24 @@ def _convert_extra(attributes):
 
 
 def _convert_length(length):
+    if not length:
+        return
+
     if isinstance(length, str):
         # 全角转半角
         length = length.replace("，", ",")
         if "," in length:
-            length = tuple(int(_.strip()) for _ in length.split(",") if _.strip())
-    else:
+            length = tuple(int(_.strip()) for _ in length.split(",") if re.match(r'\d+', _.strip()))
+        elif re.match(r'\d+', length):
+            length = int(length)
+        else:
+            raise InValidTemplate(f"Invalid template Length: {length!r}")
+    elif isinstance(length, (int, float)):
         length = int(length)
+
     if isinstance(length, (int, tuple)):
         return length
+
     return
 
 
