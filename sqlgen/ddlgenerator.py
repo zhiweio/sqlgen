@@ -4,7 +4,7 @@
 import logging
 
 from sqlgen import reserved
-from sqlgen.exceptions import InValidReservedWords
+from sqlgen.exceptions import InValidReservedWords, InValidTemplate
 from sqlgen.reserved import is_reserved_words
 
 logger = logging.getLogger(__name__)
@@ -72,6 +72,8 @@ class Field:
         for word in [self.Extra, self.Key]:
             if word:
                 self._judge_reserved_words(word)
+        if not self.Name:
+            raise InValidTemplate(f"Invalid template, empty field name: {self.Name!r}")
 
     @staticmethod
     def _judge_reserved_words(words):
@@ -90,7 +92,7 @@ class Field:
                 # 转换数值单元格式中的数字字符串
                 if self.Type in reserved.DEFAULT_EMPTY_STRING:
                     self.Default = str(self.Default)
-            if isinstance(self.Default, str):
+            if isinstance(self.Default, str) and not is_reserved_words(self.Default):
                 self.Default = f"\"{self.Default}\""
 
     def _judge_length(self):
