@@ -130,7 +130,7 @@ CREATE TABLE
             "Type": "BIGINT",
             "Length": 20,
             "Extra": ["UNSIGNED", "AUTO_INCREMENT"],
-            "Null": False,
+            "Null": false,
             "Comment": "自增主键",
             "Key": "PRIMARY"
         },
@@ -139,7 +139,7 @@ CREATE TABLE
             "Type": "VARCHAR",
             "Length": 255,
             "Default": "",
-            "Null": False,
+            "Null": false,
             "Comment": "社会信用代码",
             "Key": "INDEX"
         },
@@ -148,27 +148,39 @@ CREATE TABLE
             "Type": "VARCHAR",
             "Length": 255,
             "Default": "",
-            "Null": True,
-            "Comment": "企业名称",
+            "Null": true,
+            "Comment": "企业名称"
         },
         {
             "Name": "updatedate",
             "Type": "DATETIME",
-            "Null": True,
-            "Comment": "最新变更日期",
+            "Null": true,
+            "Comment": "最新变更日期"
         },
         {
             "Name": "row_update_time",
             "Type": "DATETIME",
-            "Extra": ["ON UPDATE CURRENT_TIMESTAMP"]
+            "Extra": ["ON UPDATE CURRENT_TIMESTAMP"],
             "Default": "CURRENT_TIMESTAMP",
-            "Comment": "记录更新时间",
+            "Comment": "记录更新时间"
         }
     ],
-  	"ENGINE": "InnoDB",
+    "ENGINE": "InnoDB",
     "AUTO_INCREMENT": 0,
     "CHARSET": "utf8mb4",
     "ROW_FORMAT": "DYNAMIC"
 }
 ```
 
+### API
+
+```python
+from sqlgen import ddlgenerator
+
+# template.json 内容格式见 `JSON Template`
+with open('template.json') as f:
+    template =  json.load(f)
+    table = ddlgenerator.parse(template)
+    sql = table.clause()
+
+```
