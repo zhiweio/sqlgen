@@ -46,6 +46,8 @@ def _convert_extra(attributes):
 
 def _convert_length(length):
     if isinstance(length, str):
+        # 全角转半角
+        length = length.replace("，", ",")
         if "," in length:
             length = tuple(int(_.strip()) for _ in length.split(",") if _.strip())
     else:

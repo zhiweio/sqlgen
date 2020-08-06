@@ -87,6 +87,9 @@ class Field:
         else:
             if isinstance(self.Default, float) and (self.Default % 1) == 0.0:
                 self.Default = int(self.Default)
+                # 转换数值单元格式中的数字字符串
+                if self.Type in reserved.DEFAULT_EMPTY_STRING:
+                    self.Default = str(self.Default)
             if isinstance(self.Default, str):
                 self.Default = f"\"{self.Default}\""
 
