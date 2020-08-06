@@ -23,7 +23,7 @@ def configure_logger(stream_level='DEBUG', debug_file=None):
     up logging to file with DEBUG level.
     """
     # Set up 'porter' logger
-    logger = logging.getLogger('porter')
+    logger = logging.getLogger('sqlgen')
     logger.setLevel(logging.DEBUG)
 
     # Remove all attached handlers, in case there was

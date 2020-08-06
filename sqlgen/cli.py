@@ -38,7 +38,8 @@ def version_msg():
 def main(template, index, output, verbose, debug_file):
     configure_logger(stream_level='DEBUG' if verbose else 'INFO', debug_file=debug_file)
     template_data = reader.parse(template, index=index)
-    sql = ddlgenerator.parse(template_data)
+    table = ddlgenerator.parse(template_data)
+    sql = table.clause()
     if output:
         with open(output, 'w') as f:
             f.write(sql)

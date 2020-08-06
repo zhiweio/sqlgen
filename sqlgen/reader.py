@@ -8,7 +8,7 @@ import xlrd
 from sqlgen.exceptions import InValidReservedWords, InValidTemplate
 from sqlgen.reserved import is_reserved_words
 
-logger = logging.getLogger(__file__)
+logger = logging.getLogger(__name__)
 
 
 def parse(file_path, read_type="excel", **kwargs):
@@ -38,21 +38,19 @@ def _convert_key(key):
 
 
 def _convert_extra(attributes):
-    attr = [_.upper() for _ in attributes.split(",") if _]
-    if not is_reserved_words(attr):
-        raise InValidReservedWords(f"invalid sql reserverd words: {attr}")
-    if attr:
-        return attr
-    return
+    if not isinstance(attributes, str):
+        raise InValidTemplate(f"Invalid template value: {attributes}")
+    attr = [_.strip().upper() for _ in attributes.split(",") if _]
+    return attr or None
 
 
 def _convert_length(length):
     if isinstance(length, str):
         if "," in length:
-            length = tuple(int(_.strip()) for _ in length.split(""))
+            length = tuple(int(_.strip()) for _ in length.split(",") if _.strip())
     else:
         length = int(length)
-    if isinstance(length, int):
+    if isinstance(length, (int, tuple)):
         return length
     return
 
@@ -90,7 +88,7 @@ class Excel:
         return rows
 
     @staticmethod
-    def is_seq(seq):
+    def _is_seq(seq):
         if isinstance(seq, (float, int)):
             return True
         elif isinstance(seq, str) and seq.isdigit():
@@ -98,8 +96,35 @@ class Excel:
         return False
 
     @staticmethod
+    def _is_header(word):
+        if isinstance(word, str):
+            if word == "序号" or word.lower() == "seq":
+                return True
+        return False
+
+    @staticmethod
+    def _convert_header(row):
+        header = {
+            "字段名称": "Field",
+            "字段中文名": "Comment",
+            "字段类型": "Type",
+            "字段长度": "Length",
+            "能否为空": "Null",
+            "默认值": "Default",
+            "字段属性": "Key",
+            "附加属性": "Extra",
+        }
+        if len(set(row) & set(header.values())) == len(header):
+            return row
+        elif len(set(row) & set(header.keys())) == len(header):
+            return [header[_] if _ in header else _ for _ in row]
+        else:
+            raise InValidTemplate(f"Invalid template header: {row}")
+
+    @staticmethod
     def parse(file_path, index=0):
         rows = Excel.read(file_path, index)
+        db_name = ""
         table_name = ""
         header = list()
         values = list()
@@ -109,9 +134,9 @@ class Excel:
                 db_name = row[1]
             elif row[0] == '表名':
                 table_name = row[1]
-            elif isinstance(row[0], str) and row[0].lower() == 'seq':
-                header = row
-            elif Excel.is_seq(row[0]):
+            elif Excel._is_header(row[0]):
+                header = Excel._convert_header(row)
+            elif Excel._is_seq(row[0]):
                 if int(row[0]) == seq:
                     values.append(row)
                     seq += 1
@@ -121,6 +146,7 @@ class Excel:
         if not table_name or not header or not fields:
             raise InValidTemplate(f"Invalid template, please check file: {file_path}")
 
+        logger.debug(f"Database: {db_name}\tTable: {table_name}\tFields: {[x['Name'] for x in fields]}")
         template = dict()
         template["Table"] = table_name
         template["Fields"] = fields

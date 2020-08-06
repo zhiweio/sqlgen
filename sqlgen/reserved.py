@@ -444,3 +444,13 @@ def is_reserved_words(words):
     if isinstance(words, (list, tuple)):
         return set(words).issubset(_sql_reserved_words_set)
     return words in _sql_reserved_words_set
+
+
+NUMERIC = ["INTEGER", "INT", "SMALLINT", "TINYINT", "MEDIUMINT", "BIGINT", "DECIMAL", "NUMERIC", "FLOAT", "DOUBLE",
+           "BIT"]
+
+DATE_AND_TIME = ["DATE", "DATETIME", "TIMESTAMP", "TIME", "YEAR"]
+
+STRING = ["CHAR", "VARCHAR", "BINARY", "VARBINARY", "BLOB", "TEXT", "ENUM", "SET"]
+
+DEFAULT_EMPTY_STRING = ["CHAR", "VARCHAR"]

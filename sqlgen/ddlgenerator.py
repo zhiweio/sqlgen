@@ -1,31 +1,18 @@
 #!/usr/bin/python
 # -*- coding: utf8
 
+import logging
+
+from sqlgen import reserved
 from sqlgen.exceptions import InValidReservedWords
 from sqlgen.reserved import is_reserved_words
 
+logger = logging.getLogger(__name__)
+
 
 class Field:
-    """
-    {
-            "Name": "id",
-            "Type": "BIGINT",
-            "Length": 20,
-            "Extra": ["UNSIGNED", "AUTO_INCREMENT"],
-            "Null": False,
-            "Comment": "自增主键",
-            "Key": "PRIMARY"
-    }
-    """
-
     def __init__(self, name, data_type, length=None, extra_attributes=None, null=True, default=None, comment=None,
                  key=None):
-        if not is_reserved_words(data_type):
-            raise InValidReservedWords(f"invalid sql reserverd words: {data_type}")
-        if extra_attributes:
-            if not is_reserved_words(extra_attributes):
-                raise InValidReservedWords(f"invalid sql reserverd words: {extra_attributes}")
-
         self.Name = name
         self.Type = data_type
         self.Length = length
@@ -34,6 +21,7 @@ class Field:
         self.Default = default
         self.Comment = comment
         self.Key = key
+        self._judge()
 
     def __hash__(self):
         return hash(self.Name)
@@ -45,30 +33,66 @@ class Field:
 
     def __repr__(self):
         return f"Field(" \
-               f"   name={self.Name}, " \
-               f"   data_type={self.Type}," \
-               f"   length={self.Length}," \
-               f"   extra_attributes={self.Extra}," \
-               f"   null={self.Null}," \
-               f"   comment={self.Comment}," \
-               f"   key={self.Key}" \
+               f"name={self.Name!r}," \
+               f"data_type={self.Type!r}," \
+               f"length={self.Length!r}," \
+               f"extra_attributes={self.Extra!r}," \
+               f"null={self.Null!r}," \
+               f"comment={self.Comment!r}," \
+               f"key={self.Key!r}" \
                f")"
 
     def clause(self):
-        dtype = f"{self.Type}({self.Length})" if self.Length else self.Type
+        if isinstance(self.Length, int):
+            dtype = f"{self.Type}({self.Length})"
+        elif isinstance(self.Length, tuple):
+            dtype = f"{self.Type}{self.Length!r}"
+        else:
+            dtype = self.Type
+
         null = "NOT NULL" if not self.Null else ""
-        default = ""
-        if isinstance(self.Default, (int, float)):
+
+        if isinstance(self.Default, (int, float)) \
+                or is_reserved_words(self.Default) \
+                or isinstance(self.Default, str):
             default = f"DEFAULT {self.Default}"
-        elif isinstance(self.Default, str):
-            if is_reserved_words(self.Default):
-                default = f"DEFAULT {self.Default}"
-            else:
-                default = f"DEFAULT \"{self.Default}\""
+        else:
+            default = ""
+
         extra = " ".join(self.Extra or list())
         comment = f"COMMENT \"{self.Comment}\"" if self.Comment else ""
+
         sql_str = f"`{self.Name}` {dtype} {null} {default} {extra} {comment}"
         return sql_str
+
+    def _judge(self):
+        self._judge_default()
+        self._judge_length()
+        self._judge_reserved_words(self.Type)
+        for word in [self.Extra, self.Key]:
+            if word:
+                self._judge_reserved_words(word)
+
+    @staticmethod
+    def _judge_reserved_words(words):
+        if not is_reserved_words(words):
+            raise InValidReservedWords(f"invalid sql reserverd words: {words}")
+
+    def _judge_default(self):
+        if not self.Default:
+            if self.Type in reserved.DEFAULT_EMPTY_STRING:
+                self.Default = "\"\""
+            else:
+                self.Default = None
+        else:
+            if isinstance(self.Default, float) and (self.Default % 1) == 0.0:
+                self.Default = int(self.Default)
+            if isinstance(self.Default, str):
+                self.Default = f"\"{self.Default}\""
+
+    def _judge_length(self):
+        if self.Type in reserved.DATE_AND_TIME:
+            self.Length = None
 
     def is_primary(self):
         return self.Key == "PRIMARY"
@@ -122,7 +146,7 @@ class Table:
             keys.append(f"PRIMARY KEY (`{self.pk.Name}`)")
         if self.idx:
             for x in self.idx:
-                keys.append(f"INDEX `{x.Name}_index` USING btree(`{x.Name}`)")
+                keys.append(f"INDEX `{x.Name}_index` USING BTREE(`{x.Name}`)")
         if self.uk:
             uk = ",".join([f"`{_.Name}`" for _ in self.uk])
             keys.append(f"UNIQUE KEY ({uk})")
@@ -155,6 +179,7 @@ def parse(template):
             extra_attributes=c["Extra"],
             null=c["Null"],
             comment=c["Comment"],
+            default=c["Default"],
             key=c['Key']
         )
         columns.append(field)
@@ -172,4 +197,4 @@ def parse(template):
         auto_increment=auto_increment,
         row_format=row_format
     )
-    return table.clause()
+    return table
