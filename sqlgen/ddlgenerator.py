@@ -81,18 +81,30 @@ class Field:
             raise InValidReservedWords(f"invalid sql reserverd words: {words}")
 
     def _judge_default(self):
+        # 处理布尔负默认值
         if not self.Default:
             if self.Type in reserved.DEFAULT_EMPTY_STRING:
                 self.Default = "\"\""
+            elif self.Type in reserved.NUMERIC:
+                if self.Default == 0:
+                    self.Default = 0
+                else:
+                    self.Default = None
             else:
                 self.Default = None
-        else:
+
+        # 处理数值类型默认值
+        elif isinstance(self.Default, (int, float)):
+            # 去除 .0 小数位
             if isinstance(self.Default, float) and (self.Default % 1) == 0.0:
                 self.Default = int(self.Default)
-                # 转换数值单元格式中的数字字符串
-                if self.Type in reserved.DEFAULT_EMPTY_STRING:
-                    self.Default = str(self.Default)
-            if isinstance(self.Default, str) and not is_reserved_words(self.Default):
+            # 数值类型单元格的数据适配字符串类型字段
+            if self.Type in reserved.DEFAULT_EMPTY_STRING:
+                self.Default = str(self.Default)
+
+        # 处理字符串类型默认值
+        elif isinstance(self.Default, str):
+            if not is_reserved_words(self.Default):
                 self.Default = f"\"{self.Default}\""
 
     def _judge_length(self):
