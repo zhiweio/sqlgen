@@ -6,7 +6,7 @@ Infers SQL DDL (Data Definition Language) from template file
 
 ```bash
 $ git clone http://git.qixin007.com/zhiwei/sqlgen  && cd sqlgen/
-$ python setup install --user
+$ python setup.py install --user
 ```
 
 ### Usage
