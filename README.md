@@ -11,6 +11,7 @@ $ python setup.py install --user
 
 ### Usage
 
+帮助
 ```bash
 $ sqlgen -h
 Usage: sqlgen [OPTIONS]
@@ -25,6 +26,7 @@ Options:
   -h, --help           Show this message and exit.
 ```
 
+生成 sql
 ```bash
 $ sqlgen -t tests/excel_template.xlsx
 
@@ -64,6 +66,37 @@ CREATE TABLE
     )
     ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC
 ;
+```
+
+从指定的工作簿生成 sql
+```bash
+$sqlgen -t tests/excel_template.xlsx --index 0
+CREATE TABLE
+    IF NOT EXISTS `t_sz_ipoguidancestate`
+
+...
+```
+
+生成 sql 并输出到指定文件
+```bash
+$sqlgen -t tests/excel_template.xlsx -o tmp.sql
+```
+
+打印详细信息
+```bash
+$sqlgen -t tests/excel_template.xlsx -v
+2020-08-20 18:08:50,872 DEBUG reader.py[line:93] sqlgen.reader: The number of worksheets is 1
+2020-08-20 18:08:50,873 DEBUG reader.py[line:94] sqlgen.reader: Worksheet name(s): ['Template']
+2020-08-20 18:08:50,873 DEBUG reader.py[line:97] sqlgen.reader: Template rows: 37 columns: 16
+
+2020-08-20 18:08:50,873 DEBUG reader.py[line:161] sqlgen.reader: Database: db_finance   Table: t_sz_ipoguidancestate    Fields: ['id', 'credit_no', 'name', 'eid', 'updatedate', 'type', 'csrc', 'guidanceagency', 'u
+rl', 'recorddate', 'submissiondate', 'reportdate', 'progressreportdate', 'changesponsordate', 'summaryreportdate', 'terminationdate', 'signdate', 'otherdate', 'status', 'accountingfirm', 'legaladvisor', 'source',
+'u_tags', 'create_time', 'row_update_time']
+
+CREATE TABLE
+    IF NOT EXISTS `t_sz_ipoguidancestate`
+
+...
 ```
 
 ## Design
@@ -184,3 +217,6 @@ with open('template.json') as f:
     sql = table.clause()
 
 ```
+
+---
+遇到问题请联系我 wangzhiwei@bertadata.com
