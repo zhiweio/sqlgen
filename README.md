@@ -99,6 +99,14 @@ CREATE TABLE
 ...
 ```
 
+### Template
+
+Excel 文档模板及规范说明见
+
+> doc/数据产品建表需求文档模板v1.1.xlsx
+
+![](./doc/template.png)
+
 ## Design
 
 ### Key Words
