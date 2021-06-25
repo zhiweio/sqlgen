@@ -5,7 +5,7 @@ Infers SQL DDL (Data Definition Language) from template file
 ### Install
 
 ```bash
-$ git clone http://git.qixin007.com/zhiwei/sqlgen  && cd sqlgen/
+$ git clone http://git.patsnap.com/wangzhiwei/sqlgen.git  && cd sqlgen/
 $ python setup.py install --user
 ```
 
@@ -227,4 +227,4 @@ with open('template.json') as f:
 ```
 
 ---
-遇到问题请联系我 wangzhiwei@bertadata.com
+遇到问题请联系我 wangzhiwei@patsnap.com
