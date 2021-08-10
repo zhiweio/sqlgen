@@ -122,7 +122,8 @@ class Field:
 
 
 class Table:
-    def __init__(self, name, columns, engine="InnoDB", auto_increment=0, charset="utf8mb4", row_format="DYNAMIC", comment=""):
+    def __init__(self, name, columns, engine="InnoDB", auto_increment=0, charset="utf8mb4", row_format="DYNAMIC",
+                 comment=""):
         self.name = name
         self.pk = self.find_pk(columns)
         self.uk = self.find_uk(columns)
@@ -161,13 +162,14 @@ class Table:
         columns = "\t\t, ".join([f"{c.clause()}\n" for c in self.columns])
         keys = list()
         if self.pk:
-            keys.append(f"PRIMARY KEY (`{self.pk.Name}`)")
+            keys.append(f"PRIMARY KEY `pk_{self.pk.Name}` (`{self.pk.Name}`)")
         if self.idx:
             for x in self.idx:
-                keys.append(f"INDEX `{x.Name}_index` USING BTREE(`{x.Name}`)")
+                keys.append(f"INDEX `idx_{x.Name}` USING BTREE(`{x.Name}`)")
         if self.uk:
             uk = ",".join([f"`{_.Name}`" for _ in self.uk])
-            keys.append(f"UNIQUE KEY ({uk})")
+            uk_name = "uk_" + f"{self.uk[0].Name}_{self.uk[1].Name}"
+            keys.append(f"UNIQUE KEY `{uk_name}` ({uk})")
         keys = "\t, ".join([f"{k}\n" for k in keys])
         engine = f"ENGINE={self.engine}" if self.engine else ""
         auto_increment = f"AUTO_INCREMENT={self.auto_increment}" if isinstance(self.auto_increment, int) else ""
