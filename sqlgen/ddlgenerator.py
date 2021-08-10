@@ -60,7 +60,7 @@ class Field:
             default = ""
 
         extra = " ".join(self.Extra or list())
-        comment = f"COMMENT \"{self.Comment}\"" if self.Comment else ""
+        comment = f"COMMENT \'{self.Comment}\'" if self.Comment else ""
 
         sql_str = f"`{self.Name}` {dtype} {null} {default} {extra} {comment}"
         return sql_str
@@ -122,7 +122,7 @@ class Field:
 
 
 class Table:
-    def __init__(self, name, columns, engine="InnoDB", auto_increment=0, charset="utf8mb4", row_format="DYNAMIC"):
+    def __init__(self, name, columns, engine="InnoDB", auto_increment=0, charset="utf8mb4", row_format="DYNAMIC", comment=""):
         self.name = name
         self.pk = self.find_pk(columns)
         self.uk = self.find_uk(columns)
@@ -132,6 +132,7 @@ class Table:
         self.charset = charset
         self.row_format = row_format
         self.auto_increment = auto_increment
+        self.comment = comment
 
     @staticmethod
     def find_pk(columns):
@@ -172,6 +173,7 @@ class Table:
         auto_increment = f"AUTO_INCREMENT={self.auto_increment}" if isinstance(self.auto_increment, int) else ""
         charset = f"DEFAULT CHARSET={self.charset}" if self.charset else ""
         row_format = f"ROW_FORMAT={self.row_format}" if self.row_format else ""
+        comment = f"COMMENT=\'{self.comment}\'" if self.comment else ""
         sql_str = f"""
 CREATE TABLE 
     IF NOT EXISTS `{self.name}`
@@ -179,7 +181,7 @@ CREATE TABLE
       \t\t{columns}
       \t, {keys}
     )
-    {engine} {auto_increment} {charset} {row_format}
+    {engine} {auto_increment} {charset} {row_format} {comment}
 ;
 """
         return sql_str

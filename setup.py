@@ -10,7 +10,7 @@ with open('README.md', encoding='utf-8') as readme_file:
 
 requirements = [
     "click>=7.1",
-    "xlrd>=1.2.0"
+    "xlrd==1.2.0",
 ]
 
 setup(
