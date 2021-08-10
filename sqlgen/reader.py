@@ -138,6 +138,7 @@ class Excel:
         rows = Excel.read(file_path, index)
         db_name = ""
         table_name = ""
+        table_name_zh = ""
         header = list()
         values = list()
         seq = 1
@@ -146,6 +147,8 @@ class Excel:
                 db_name = row[1]
             elif row[0] == '表名':
                 table_name = row[1]
+            elif row[0] == '表中文名':
+                table_name_zh = row[1]
             elif Excel._is_header(row[0]):
                 header = Excel._convert_header(row)
             elif Excel._is_seq(row[0]):
@@ -161,6 +164,7 @@ class Excel:
         logger.debug(f"Database: {db_name}\tTable: {table_name}\tFields: {[x['Name'] for x in fields]}")
         template = dict()
         template["Table"] = table_name
+        template["Table_zh"] = table_name_zh
         template["Fields"] = fields
         # template["ENGINE"] = ""
         # template["AUTO_INCREMENT"] = ""

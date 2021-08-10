@@ -189,6 +189,7 @@ CREATE TABLE
 
 def parse(template):
     table_name = template["Table"]
+    table_name_zh = template["Table_zh"]
     columns = list()
     for c in template["Fields"]:
         field = Field(
@@ -214,6 +215,7 @@ def parse(template):
         engine=engine,
         charset=charset,
         auto_increment=auto_increment,
-        row_format=row_format
+        row_format=row_format,
+        comment=table_name_zh
     )
     return table
