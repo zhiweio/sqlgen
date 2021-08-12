@@ -6,7 +6,7 @@ Infers SQL DDL (Data Definition Language) from template file
 
 ```bash
 $ git clone http://git.patsnap.com/wangzhiwei/sqlgen.git  && cd sqlgen/
-$ python setup.py install --user
+$ python3 setup.py install --user
 ```
 
 ### Usage
@@ -26,7 +26,7 @@ Options:
   -h, --help           Show this message and exit.
 ```
 
-生成 sql
+生成 SQL
 ```bash
 $ sqlgen -t tests/excel_template.xlsx
 
@@ -68,7 +68,7 @@ CREATE TABLE
 ;
 ```
 
-从指定的工作簿生成 sql
+从指定的工作簿生成 SQL
 ```bash
 $sqlgen -t tests/excel_template.xlsx --index 0
 CREATE TABLE
@@ -77,7 +77,7 @@ CREATE TABLE
 ...
 ```
 
-生成 sql 并输出到指定文件
+生成 SQL 并输出到指定文件
 ```bash
 $sqlgen -t tests/excel_template.xlsx -o tmp.sql
 ```
@@ -103,7 +103,7 @@ CREATE TABLE
 
 Excel 文档模板及规范说明见
 
-> doc/数据产品建表需求文档模板v1.1.xlsx
+> doc/数据产品建表需求文档模板v2.1.xlsx
 
 ![](./doc/template.png)
 
