@@ -168,7 +168,10 @@ class Table:
                 keys.append(f"INDEX `idx_{x.Name}` USING BTREE(`{x.Name}`)")
         if self.uk:
             uk = ",".join([f"`{_.Name}`" for _ in self.uk])
-            uk_name = "uk_" + f"{self.uk[0].Name}_{self.uk[1].Name}"
+            if len(uk) > 1:
+                uk_name = "uk_" + f"{self.uk[0].Name}_{self.uk[1].Name}"
+            else:
+                uk_name = f"uk_{self.uk[0].Name}"
             keys.append(f"UNIQUE KEY `{uk_name}` ({uk})")
         keys = "\t, ".join([f"{k}\n" for k in keys])
         engine = f"ENGINE={self.engine}" if self.engine else ""
