@@ -191,7 +191,7 @@ class Table:
 
         if self.uk:
             uk = ",".join([f"`{_.Name}`" for _ in self.uk])
-            if len(uk) > 1:
+            if len(self.uk) > 1:
                 uk_name = "uk_" + f"{self.uk[0].Name}_{self.uk[1].Name}"
             else:
                 uk_name = f"uk_{self.uk[0].Name}"
