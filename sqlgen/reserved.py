@@ -655,12 +655,11 @@ sql_reserved_words = [
     "X509",
     "XA",
     "XID;",
-    "XID"
-    "XML",
+    "XID" "XML",
     "XOR",
     "YEAR",
     "YEAR_MONTH",
-    "ZEROFILL"
+    "ZEROFILL",
 ]
 
 _sql_reserved_words_set = set(sql_reserved_words)
@@ -668,15 +667,26 @@ _sql_reserved_words_set = set(sql_reserved_words)
 
 def is_reserved_words(words):
     if isinstance(words, (list, tuple)):
-        words = set(_ for w in words for _ in re.split(r'\s+', w))
+        words = set(_ for w in words for _ in re.split(r"\s+", w))
         return words.issubset(_sql_reserved_words_set)
     elif isinstance(words, str):
-        return set(re.split(r'\s+', words)).issubset(_sql_reserved_words_set)
+        return set(re.split(r"\s+", words)).issubset(_sql_reserved_words_set)
     return False
 
 
-NUMERIC = ["INTEGER", "INT", "SMALLINT", "TINYINT", "MEDIUMINT", "BIGINT", "DECIMAL", "NUMERIC", "FLOAT", "DOUBLE",
-           "BIT"]
+NUMERIC = [
+    "INTEGER",
+    "INT",
+    "SMALLINT",
+    "TINYINT",
+    "MEDIUMINT",
+    "BIGINT",
+    "DECIMAL",
+    "NUMERIC",
+    "FLOAT",
+    "DOUBLE",
+    "BIT",
+]
 
 DATE_AND_TIME = ["DATE", "DATETIME", "TIMESTAMP", "TIME", "YEAR"]
 

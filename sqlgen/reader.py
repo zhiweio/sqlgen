@@ -23,14 +23,14 @@ def _convert_key(key):
         return
 
     keys = {
-        '主键': 'PRIMARY',
-        'PRI': 'PRIMARY',
-        '索引': 'INDEX',
-        'MUL': 'INDEX',
-        '普通索引': 'INDEX',
-        '唯一索引': 'UNIQUE',
-        '唯一键': 'UNIQUE',
-        'UNI': 'UNIQUE',
+        "主键": "PRIMARY",
+        "PRI": "PRIMARY",
+        "索引": "INDEX",
+        "MUL": "INDEX",
+        "普通索引": "INDEX",
+        "唯一索引": "UNIQUE",
+        "唯一键": "UNIQUE",
+        "UNI": "UNIQUE",
     }
     key = keys[key]
     if not is_reserved_words(key):
@@ -53,8 +53,10 @@ def _convert_length(length):
         # 全角转半角
         length = length.replace("，", ",")
         if "," in length:
-            length = tuple(int(_.strip()) for _ in length.split(",") if re.match(r'\d+', _.strip()))
-        elif re.match(r'\d+', length):
+            length = tuple(
+                int(_.strip()) for _ in length.split(",") if re.match(r"\d+", _.strip())
+            )
+        elif re.match(r"\d+", length):
             length = int(length)
         else:
             raise InValidTemplate(f"Invalid template Length: {length!r}")
@@ -73,7 +75,11 @@ def _convert(field):
     ret["Type"] = field["Type"].upper()
     ret["Length"] = _convert_length(field["Length"])
     ret["Null"] = False if field["Null"].upper() == "N" else True
-    ret["Default"] = field["Default"].strip() if isinstance(field["Default"], str) else field["Default"]
+    ret["Default"] = (
+        field["Default"].strip()
+        if isinstance(field["Default"], str)
+        else field["Default"]
+    )
     ret["Key"] = _convert_key(field["Key"].strip().upper())
     ret["Extra"] = _convert_extra(field["Extra"].strip())
     ret["Comment"] = field["Comment"].strip()
@@ -94,7 +100,9 @@ class Excel:
         logger.debug("Worksheet name(s): {0}".format(book.sheet_names()))
 
         sheet = book.sheet_by_index(index)
-        logger.debug("{0} rows: {1} columns: {2}\n".format(sheet.name, sheet.nrows, sheet.ncols))
+        logger.debug(
+            "{0} rows: {1} columns: {2}\n".format(sheet.name, sheet.nrows, sheet.ncols)
+        )
 
         rows = [sheet.row_values(rx) for rx in range(sheet.nrows)]
         return rows
@@ -143,11 +151,11 @@ class Excel:
         values = list()
         seq = 1
         for row in rows:
-            if row[0] == '库名':
+            if row[0] == "库名":
                 db_name = row[1]
-            elif row[0] == '表名':
+            elif row[0] == "表名":
                 table_name = row[1]
-            elif row[0] == '表中文名':
+            elif row[0] == "表中文名":
                 table_name_zh = row[1]
             elif Excel._is_header(row[0]):
                 header = Excel._convert_header(row)
@@ -161,7 +169,9 @@ class Excel:
         if not table_name or not header or not fields:
             raise InValidTemplate(f"Invalid template, please check file: {file_path}")
 
-        logger.debug(f"Database: {db_name}\tTable: {table_name}\tFields: {[x['Name'] for x in fields]}")
+        logger.debug(
+            f"Database: {db_name}\tTable: {table_name}\tFields: {[x['Name'] for x in fields]}"
+        )
         template = dict()
         template["Table"] = table_name
         template["Table_zh"] = table_name_zh

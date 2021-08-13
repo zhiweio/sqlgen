@@ -11,8 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 class Field:
-    def __init__(self, name, data_type, length=None, extra_attributes=None, null=True, default=None, comment=None,
-                 key=None):
+    def __init__(
+        self,
+        name,
+        data_type,
+        length=None,
+        extra_attributes=None,
+        null=True,
+        default=None,
+        comment=None,
+        key=None,
+    ):
         self.Name = name
         self.Type = data_type
         self.Length = length
@@ -32,15 +41,17 @@ class Field:
         return False
 
     def __repr__(self):
-        return f"Field(" \
-               f"name={self.Name!r}," \
-               f"data_type={self.Type!r}," \
-               f"length={self.Length!r}," \
-               f"extra_attributes={self.Extra!r}," \
-               f"null={self.Null!r}," \
-               f"comment={self.Comment!r}," \
-               f"key={self.Key!r}" \
-               f")"
+        return (
+            f"Field("
+            f"name={self.Name!r},"
+            f"data_type={self.Type!r},"
+            f"length={self.Length!r},"
+            f"extra_attributes={self.Extra!r},"
+            f"null={self.Null!r},"
+            f"comment={self.Comment!r},"
+            f"key={self.Key!r}"
+            f")"
+        )
 
     def clause(self):
         if isinstance(self.Length, int):
@@ -52,15 +63,17 @@ class Field:
 
         null = "NOT NULL" if not self.Null else ""
 
-        if isinstance(self.Default, (int, float)) \
-                or is_reserved_words(self.Default) \
-                or isinstance(self.Default, str):
+        if (
+            isinstance(self.Default, (int, float))
+            or is_reserved_words(self.Default)
+            or isinstance(self.Default, str)
+        ):
             default = f"DEFAULT {self.Default}"
         else:
             default = ""
 
         extra = " ".join(self.Extra or list())
-        comment = f"COMMENT \'{self.Comment}\'" if self.Comment else ""
+        comment = f"COMMENT '{self.Comment}'" if self.Comment else ""
 
         sql_str = f"`{self.Name}` {dtype} {null} {default} {extra} {comment}"
         return sql_str
@@ -84,7 +97,7 @@ class Field:
         # 处理布尔负默认值
         if not self.Default:
             if self.Type in reserved.DEFAULT_EMPTY_STRING:
-                self.Default = "\"\""
+                self.Default = '""'
             elif self.Type in reserved.NUMERIC:
                 if self.Default == 0:
                     self.Default = 0
@@ -105,7 +118,7 @@ class Field:
         # 处理字符串类型默认值
         elif isinstance(self.Default, str):
             if not is_reserved_words(self.Default):
-                self.Default = f"\"{self.Default}\""
+                self.Default = f'"{self.Default}"'
 
     def _judge_length(self):
         if self.Type in reserved.DATE_AND_TIME:
@@ -122,8 +135,16 @@ class Field:
 
 
 class Table:
-    def __init__(self, name, columns, engine="InnoDB", auto_increment=0, charset="utf8mb4", row_format="DYNAMIC",
-                 comment=""):
+    def __init__(
+        self,
+        name,
+        columns,
+        engine="InnoDB",
+        auto_increment=0,
+        charset="utf8mb4",
+        row_format="DYNAMIC",
+        comment="",
+    ):
         self.name = name
         self.pk = self.find_pk(columns)
         self.uk = self.find_uk(columns)
@@ -163,9 +184,11 @@ class Table:
         keys = list()
         if self.pk:
             keys.append(f"PRIMARY KEY `pk_{self.pk.Name}` (`{self.pk.Name}`)")
+
         if self.idx:
             for x in self.idx:
                 keys.append(f"INDEX `idx_{x.Name}` USING BTREE(`{x.Name}`)")
+
         if self.uk:
             uk = ",".join([f"`{_.Name}`" for _ in self.uk])
             if len(uk) > 1:
@@ -173,12 +196,17 @@ class Table:
             else:
                 uk_name = f"uk_{self.uk[0].Name}"
             keys.append(f"UNIQUE KEY `{uk_name}` ({uk})")
+
         keys = "\t, ".join([f"{k}\n" for k in keys])
         engine = f"ENGINE={self.engine}" if self.engine else ""
-        auto_increment = f"AUTO_INCREMENT={self.auto_increment}" if isinstance(self.auto_increment, int) else ""
+        auto_increment = (
+            f"AUTO_INCREMENT={self.auto_increment}"
+            if isinstance(self.auto_increment, int)
+            else ""
+        )
         charset = f"DEFAULT CHARSET={self.charset}" if self.charset else ""
         row_format = f"ROW_FORMAT={self.row_format}" if self.row_format else ""
-        comment = f"COMMENT=\'{self.comment}\'" if self.comment else ""
+        comment = f"COMMENT='{self.comment}'" if self.comment else ""
         sql_str = f"""
 CREATE TABLE 
     IF NOT EXISTS `{self.name}`
@@ -205,7 +233,7 @@ def parse(template):
             null=c["Null"],
             comment=c["Comment"],
             default=c["Default"],
-            key=c['Key']
+            key=c["Key"],
         )
         columns.append(field)
 
@@ -221,6 +249,6 @@ def parse(template):
         charset=charset,
         auto_increment=auto_increment,
         row_format=row_format,
-        comment=table_name_zh
+        comment=table_name_zh,
     )
     return table
