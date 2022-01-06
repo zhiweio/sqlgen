@@ -19,11 +19,12 @@ Usage: sqlgen [OPTIONS]
 Options:
   -V, --version        Show the version and exit.
   -t, --template PATH  file template
-  --index INTEGER      index of excel sheets  [default: 0]
+  -s, --sheets TEXT    index of excel sheets, eg: 1-6  [default: 0]
   -o, --output PATH    Save task template into file
   --debug-file PATH    File to be used as a stream for DEBUG logging
   -v, --verbose        Print debug information
   -h, --help           Show this message and exit.
+
 ```
 
 生成 SQL
@@ -70,7 +71,7 @@ CREATE TABLE
 
 从指定的工作簿生成 SQL
 ```bash
-$sqlgen -t tests/excel_template.xlsx --index 0
+$sqlgen -t tests/excel_template.xlsx --sheets 0
 CREATE TABLE
     IF NOT EXISTS `t_sz_ipoguidancestate`
 

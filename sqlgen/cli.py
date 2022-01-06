@@ -1,12 +1,38 @@
 #!/usr/bin/python
 # -*- coding: utf8
 import os
+import re
 import sys
 
 import click
 
 from sqlgen import __version__, ddlgenerator, reader
 from sqlgen.log import configure_logger
+
+
+def parse_sheets(arg):
+    sheets = list()
+    # one sheet
+    if re.match(r"^\d+$", arg):
+        sheets.append(int(arg))
+
+    # range of sheets
+    elif re.match(r"^\d+\-\d+$", arg):
+        start, end = arg.split("-")
+        start, end = int(start), int(end)
+        if end < start:
+            raise click.BadParameter(
+                "end sheet index must be greater than start sheet index"
+            )
+        sheets.extend(list(range(start, end + 1)))
+
+    elif re.match(r"^\d+(,\d+)*$", arg):
+        sheets.extend(set([int(s) for s in arg.split(",")]))
+
+    else:
+        raise click.BadParameter("Invalid sheet index")
+
+    return sheets
 
 
 def version_msg():
@@ -24,7 +50,12 @@ def version_msg():
     help="file template",
 )
 @click.option(
-    "--index", type=int, default=0, show_default=True, help="index of excel sheets"
+    "-s",
+    "--sheets",
+    type=str,
+    default="0",
+    show_default=True,
+    help="index of excel sheets, eg: 1-6",
 )
 @click.option("-o", "--output", type=click.Path(), help="Save task template into file")
 @click.option(
@@ -36,13 +67,20 @@ def version_msg():
 @click.option(
     "-v", "--verbose", is_flag=True, default=False, help="Print debug information"
 )
-def main(template, index, output, verbose, debug_file):
+def main(template, sheets, output, verbose, debug_file):
     configure_logger(stream_level="DEBUG" if verbose else "INFO", debug_file=debug_file)
-    template_data = reader.parse(template, index=index)
-    table = ddlgenerator.parse(template_data)
-    sql = table.clause()
+
+    clauses = list()
+    for sheet in parse_sheets(sheets):
+        template_data = reader.parse(template, index=sheet)
+        table = ddlgenerator.parse(template_data)
+        sql = table.clause()
+        clauses.append(sql)
+
+    clauses = "\n".join(clauses)
+
     if output:
         with open(output, "w") as f:
-            f.write(sql)
+            f.write(clauses)
     else:
-        print(sql)
+        print(clauses)
