@@ -56,8 +56,8 @@ def _convert_length(length):
             length = tuple(
                 int(_.strip()) for _ in length.split(",") if re.match(r"\d+", _.strip())
             )
-        elif re.match(r"\d+", length):
-            length = int(length)
+        elif re.match(r"\d+", length.strip()):
+            length = int(length.strip())
         else:
             raise InValidTemplate(f"Invalid template Length: {length!r}")
     elif isinstance(length, (int, float)):
