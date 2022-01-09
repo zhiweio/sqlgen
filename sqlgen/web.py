@@ -43,6 +43,8 @@ def main():
         ],
     )
     sheets = data["sheets"]
+    if not sheets:
+        sheets = "0"
     doc = data["doc"]
     if not doc:
         put_warning("No file or upload failed!")
