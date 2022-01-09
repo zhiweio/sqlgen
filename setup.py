@@ -8,10 +8,7 @@ version = "0.1.6"
 with open("README.md", encoding="utf-8") as readme_file:
     readme = readme_file.read()
 
-requirements = [
-    "click>=7.1",
-    "xlrd==1.2.0",
-]
+requirements = ["click>=7.1", "xlrd==1.2.0", "pywebio"]
 
 setup(
     name="sqlgen",
