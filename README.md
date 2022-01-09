@@ -100,6 +100,21 @@ CREATE TABLE
 ...
 ```
 
+### Run on Web
+
+```shell
+$ python sqlgen/web.py
+Running on all addresses.
+Use http://192.168.2.13:8080/ to access the application
+
+```
+input
+![](./doc/run_on_web_input.png)
+
+output
+![](./doc/run_on_web_output.png)
+
+
 ### Template
 
 Excel 文档模板及规范说明见
