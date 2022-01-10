@@ -19,7 +19,7 @@ if not cache_dir.exists():
 
 @config(theme="minty")
 def main():
-    set_env(auto_scroll_bottom=True)
+    set_env(title="sqlgen", auto_scroll_bottom=True)
 
     put_markdown(
         """
