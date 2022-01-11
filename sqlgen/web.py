@@ -81,7 +81,7 @@ def documents():
         put_button("Delete", onclick=lambda: delete(pin.selected), small=True)
     else:
         put_text("No documents exist")
-        go_back(lambda: go_app("home"))
+        go_back(lambda: go_app("home", new_window=False))
 
 
 @config(theme="minty")
