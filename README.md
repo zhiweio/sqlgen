@@ -5,7 +5,7 @@ Infers SQL DDL (Data Definition Language) from template file
 ### Install
 
 ```bash
-$ git clone http://git.patsnap.com/wangzhiwei/sqlgen.git  && cd sqlgen/
+$ git clone https://gitlab.com/zhiweio/sqlgen.git  && cd sqlgen/
 $ python3 setup.py install --user
 ```
 
@@ -71,7 +71,7 @@ CREATE TABLE
 
 从指定的工作簿生成 SQL
 ```bash
-$sqlgen -t tests/excel_template.xlsx --sheets 0
+$ sqlgen -t tests/excel_template.xlsx --sheets 0
 CREATE TABLE
     IF NOT EXISTS `t_sz_ipoguidancestate`
 
@@ -80,12 +80,12 @@ CREATE TABLE
 
 生成 SQL 并输出到指定文件
 ```bash
-$sqlgen -t tests/excel_template.xlsx -o tmp.sql
+$ sqlgen -t tests/excel_template.xlsx -o tmp.sql
 ```
 
 打印详细信息
 ```bash
-$sqlgen -t tests/excel_template.xlsx -v
+$ sqlgen -t tests/excel_template.xlsx -v
 2020-08-20 18:08:50,872 DEBUG reader.py[line:93] sqlgen.reader: The number of worksheets is 1
 2020-08-20 18:08:50,873 DEBUG reader.py[line:94] sqlgen.reader: Worksheet name(s): ['Template']
 2020-08-20 18:08:50,873 DEBUG reader.py[line:97] sqlgen.reader: Template rows: 37 columns: 16
@@ -105,9 +105,21 @@ CREATE TABLE
 ```shell
 $ python sqlgen/web.py
 Running on all addresses.
-Use http://192.168.2.13:8080/ to access the application
+Use http://127.0.0.1:8080/ to access the application
 
 ```
+
+从 docker 运行
+```shell
+$ docker build -t sqlgen:1.0 .
+$ docker run -d -p 8080:8080 sqlgen:1.0
+```
+
+从 dock-compose 运行
+```shell
+$ docker-compose up -d
+```
+
 input
 ![](./doc/run_on_web_input.png)
 
@@ -241,6 +253,3 @@ with open('template.json') as f:
     sql = table.clause()
 
 ```
-
----
-遇到问题请联系我 wangzhiwei@patsnap.com
