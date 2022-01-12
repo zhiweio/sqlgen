@@ -2,10 +2,10 @@ version: '3'
 
 services:
   server:
-    image: sqlgen:1.0
+    image: zhiweio/sqlgen
     container_name: sqlgen_web
     volumes:
-      - /opt/app/sqlgen:/sqlgen/.cache
+      - ./.cache:/sqlgen/.cache
     ports:
-      - "8081:8080"
+      - "8080:8080"
     restart: always
