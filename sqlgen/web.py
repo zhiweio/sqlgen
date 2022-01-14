@@ -41,7 +41,7 @@ def page_header():
     # sqlgen
     Infers SQL DDL (Data Definition Language) from template file.
     
-    details: http://git.patsnap.com/wangzhiwei/sqlgen
+    details: https://gitlab.com/zhiweio/sqlgen.git
     
     """
     )
