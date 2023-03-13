@@ -1,17 +1,50 @@
 # SQLGEN
 
-Infers SQL DDL (Data Definition Language) from template file
+sqlgen 是一个从 Excel 文档模板自动生成建表 SQL 语句的小工具，支持命令行和 WebUI 使用，适用于经常进行数据库设计建表的场景。
 
-### Install
+### 安装
 
 ```bash
-$ git clone https://gitlab.com/zhiweio/sqlgen.git  && cd sqlgen/
+$ https://github.com/zhiweio/sqlgen.git  && cd sqlgen/
 $ python3 setup.py install --user
 ```
 
-### Usage
+### Excel 建表模板
 
-帮助
+Excel 文档模板及规范说明见：[数据产品建表需求文档模板v2.1.xlsx](doc/数据产品建表需求文档模板v2.1.xlsx)
+
+![](./doc/template.png)
+
+### Web 使用
+
+```shell
+$ python sqlgen/web.py
+Running on all addresses.
+Use http://127.0.0.1:8080/ to access the application
+
+```
+
+从 docker 运行
+```shell
+$ docker build -t sqlgen:1.0 .
+$ docker run -d -p 8080:8080 sqlgen:1.0
+```
+
+从 dock-compose 运行
+```shell
+$ docker-compose up -d
+```
+
+input
+![](./doc/run_on_web_input.png)
+
+output
+![](./doc/run_on_web_output.png)
+
+
+
+### 命令行使用
+
 ```bash
 $ sqlgen -h
 Usage: sqlgen [OPTIONS]
@@ -27,7 +60,7 @@ Options:
 
 ```
 
-生成 SQL
+读取 Excel 模板生成 SQL
 ```bash
 $ sqlgen -t tests/excel_template.xlsx
 
@@ -99,41 +132,6 @@ CREATE TABLE
 
 ...
 ```
-
-### Run on Web
-
-```shell
-$ python sqlgen/web.py
-Running on all addresses.
-Use http://127.0.0.1:8080/ to access the application
-
-```
-
-从 docker 运行
-```shell
-$ docker build -t sqlgen:1.0 .
-$ docker run -d -p 8080:8080 sqlgen:1.0
-```
-
-从 dock-compose 运行
-```shell
-$ docker-compose up -d
-```
-
-input
-![](./doc/run_on_web_input.png)
-
-output
-![](./doc/run_on_web_output.png)
-
-
-### Template
-
-Excel 文档模板及规范说明见
-
-> doc/数据产品建表需求文档模板v2.1.xlsx
-
-![](./doc/template.png)
 
 ## Design
 
